@@ -1,3 +1,5 @@
 streamlit
 gdown
 torch  
+transformers
+
