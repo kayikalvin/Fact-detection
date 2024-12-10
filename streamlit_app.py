@@ -1,37 +1,55 @@
 import streamlit as st
-import os
 import gdown
+import os
 
-# Function to download the model
-@st.cache_resource  # Cache the model so it is downloaded and loaded only once
+# Function to download and load the fact-checker model
+@st.cache_resource  # Cache the model to download and load it only once
 def download_and_load_model():
-    # Google Drive file ID
-    file_id = "your_file_id_here"
+    # Google Drive file ID for the model
+    file_id = "1FZAkPX7FlbvvYTdE_EebrOn37zPN46hy"
     download_url = f"https://drive.google.com/uc?id={file_id}"
-    output_path = "model_file_name"  # Replace with your model file name
+    output_path = "news_fact_checker_model.pt"  # Adjust the file name if needed
     
-    # Check if the model file is already downloaded
+    # Check if the file exists to avoid re-downloading
     if not os.path.exists(output_path):
-        with st.spinner("Downloading the model..."):
+        with st.spinner("Downloading the news fact-checker model..."):
             gdown.download(download_url, output_path, quiet=False)
-    
-    # Load the model (example for PyTorch)
+
+    # Load the model (adjust based on your framework, e.g., PyTorch or TensorFlow)
     import torch
-    model = torch.load(output_path)
+    model = torch.load(output_path, map_location=torch.device('cpu'))
     return model
 
 # Streamlit UI
-st.title("Fact-Checking Model")
-st.write("This app uses a pretrained model to verify statements.")
+st.title("News Fact-Checker")
+st.write("This app checks the credibility of news statements using a pretrained AI model.")
 
-# Load the model
+# Load the fact-checker model
 model = download_and_load_model()
-st.success("Model loaded successfully!")
+st.success("Fact-checker model loaded successfully!")
 
-# Add your app functionality below
-user_input = st.text_input("Enter a statement to verify:")
-if user_input:
-    # Example of using the model
-    st.write("Verifying...")
-    # prediction = model.predict(user_input)  # Adjust based on your model's usage
-    # st.write(f"Prediction: {prediction}")
+# Input for the user to enter a news statement
+user_input = st.text_area("Enter a news statement to verify:", height=150)
+
+# Add a button to process the input
+if st.button("Check Fact"):
+    if user_input.strip():
+        st.write("Processing your statement...")
+
+        # Example model inference (adjust based on your model logic)
+        # Replace the following lines with actual prediction logic
+        # Example for a PyTorch model:
+        # prediction = model.predict(user_input)
+        # For now, we'll simulate predictions for demonstration purposes:
+        import random
+        prediction = random.choice(["True", "False", "Uncertain"])
+
+        # Display the result
+        st.subheader("Fact-Check Result:")
+        st.write(f"The statement is **{prediction}**.")
+    else:
+        st.warning("Please enter a valid news statement to verify.")
+
+# Footer
+st.markdown("---")
+st.caption("Powered by a pretrained news fact-checker AI model.")
